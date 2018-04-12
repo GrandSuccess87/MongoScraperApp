@@ -74,7 +74,7 @@ app.get("/scrape", function(req, res) {
       db.Article.create(result)
         .then(function(dbArticle) {
           // View the added result in the console
-        //   res.json(dbArticle);
+          console.log(dbArticle);
         })
         .catch(function(err) {
           // If an error occurred, send it to the client
@@ -84,7 +84,7 @@ app.get("/scrape", function(req, res) {
         // result.push(article);
     });
     // If we were able to successfully scrape and save an Article, send a message to the client
-    // res.send("Scrape Complete");
+    res.send("Scrape Complete");
   });
 });
 
@@ -94,7 +94,7 @@ app.get("/articles", function(req, res) {
   db.Article.find({})
     .then(function(dbArticle) {
       // If we were able to successfully find Articles, send them back to the client
-      res.json(dbArticle);
+    //   res.json(dbArticle);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
