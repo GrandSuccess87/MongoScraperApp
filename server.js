@@ -2,6 +2,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+var path = require("path");
 
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
@@ -26,6 +27,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Use express.static to serve the public folder as a static directory
 app.use(express.static("public"));
 
+
+var exphbs = require("express-handlebars");
+app.engine("handlebars", exphbs({
+    defaultLayout: "main",
+    partialsDir: path.join(__dirname, "/views/layout/partials")
+}));
+app.set("view engine", "handlebars");
+
+
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/MongoScraper");
 
@@ -48,10 +58,12 @@ app.get("/scrape", function(req, res) {
       var result = {};
 
       // Add the text and href of every link, and save them as properties of the result object
-      result.title = $(this).children("div").children("h3").children("a").text();
-      result.link = $(this).children("div").children("h3").children("a").attr("href");
+      result.title = $(this).children("h3.trb_outfit_relatedListTitle").children("a.trb_outfit_relatedListTitle_a").text();
+      result.link = $(this).children("h3.trb_outfit_relatedListTitle").children("a.trb_outfit_relatedListTitle_a").attr("href");
       result.summary = $(this).children("p.trb_outfit_group_list_item_brief").text();
     
+      console.log(result);
+
     //   var article = {
     //       title: title,
     //       link: link, 
@@ -62,16 +74,15 @@ app.get("/scrape", function(req, res) {
       db.Article.create(result)
         .then(function(dbArticle) {
           // View the added result in the console
-          console.log(dbArticle);
+        //   res.json(dbArticle);
         })
         .catch(function(err) {
           // If an error occurred, send it to the client
-          return res.json(err);
+          console.log('Error: ' + err);
         });
 
         // result.push(article);
     });
-        console.log(result);
     // If we were able to successfully scrape and save an Article, send a message to the client
     // res.send("Scrape Complete");
   });
@@ -87,7 +98,7 @@ app.get("/articles", function(req, res) {
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-      res.json(err);
+    //   res.json(err);
     });
 });
 
@@ -99,11 +110,11 @@ app.get("/articles/:id", function(req, res) {
     .populate("note")
     .then(function(dbArticle) {
       // If we were able to successfully find an Article with the given id, send it back to the client
-      res.json(dbArticle);
+    //   res.json(dbArticle);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-      res.json(err);
+    //   res.json(err);
     });
 });
 
@@ -119,11 +130,11 @@ app.post("/articles/:id", function(req, res) {
     })
     .then(function(dbArticle) {
       // If we were able to successfully update an Article, send it back to the client
-      res.json(dbArticle);
+    //   res.json(dbArticle);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-      res.json(err);
+    //   res.json(err);
     });
 });
 
