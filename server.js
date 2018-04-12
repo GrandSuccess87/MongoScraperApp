@@ -110,11 +110,11 @@ app.get("/articles/:id", function(req, res) {
     .populate("note")
     .then(function(dbArticle) {
       // If we were able to successfully find an Article with the given id, send it back to the client
-    //   res.json(dbArticle);
+      res.json(dbArticle);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-    //   res.json(err);
+      res.json(err);
     });
 });
 
@@ -130,7 +130,7 @@ app.post("/articles/:id", function(req, res) {
     })
     .then(function(dbArticle) {
       // If we were able to successfully update an Article, send it back to the client
-    //   res.json(dbArticle);
+      res.json(dbArticle);
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
