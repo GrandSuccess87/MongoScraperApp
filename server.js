@@ -138,6 +138,65 @@ app.post("/articles/:id", function(req, res) {
     });
 });
 
+// // Route for viewing saved articles
+
+app.get('/saved', function(req, res){
+    db.Article.find({'saved': true}) 
+    .then(function(data){
+        // var savedObject = {
+        //   Article: savedData
+        // };
+        res.send('Data saved')
+    })
+    .catch(function(err) {
+        // If an error occurred, send it to the client
+        res.json('ERROR: ' + err);
+    });
+        // console.log(savedData);    
+        // console.log('Saved Articles: ' + savedObject);
+        // res.render('saved', savedObject);
+        // If there are no errors, send the data to the browser as json
+        // res.json(savedObject);      
+});
+
+// Route to save an article
+    app.post('articles/save/:id', function(req, res){
+        db.newsData.findOneAndUpdate({_id: req.params.id}, {saved: true})
+        .then(function(data){
+            res.json('route to save data');
+            // res.json(dbSaveArticle);
+        })
+        .catch(function(err) {
+            // If an error occurred, send it to the client
+            res.json('ERROR: ' + err);
+          });
+    });
+
+    // Route to delete an article
+    app.post("/articles/delete/:id", function(req, res) {
+        db.Article.findOneAndUpdate({ "_id": req.params.id }, {"saved": false, "notes": []})
+        .then(function(err, dbDeletedArticle) {
+            res.send(dbDeletedArticle);
+        })
+        .catch(function(err) {
+        // If an error occurred, send it to the client
+            res.json('ERROR: ' + err);
+        });
+    });
+
+// Route to delete note
+    app.delete("/notes/delete/:note_id/:article_id", function(req, res) {      
+        db.Note.findOneAndRemove({ "_id": req.params.article_id }, {$pull: {"notes": req.params.note_id}})
+            .then(function(dbNoteDelete) {
+                return res.json(dbNoteDelete);
+                console.log("Note Deleted!");
+            })
+            .catch(function(err) {
+                // If an error occurred, send it to the client
+                res.json('ERROR: ' + err);
+            });
+          });
+
 // Start the server
 app.listen(PORT, function() {
   console.log("App running on port " + PORT + "!");
