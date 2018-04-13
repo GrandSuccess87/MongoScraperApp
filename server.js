@@ -99,8 +99,9 @@ app.get("/articles", function(req, res) {
     // Grab every document in the Articles collection
     db.Article.find({})
       .then(function(dbArticle) {
+          console.log(dbArticle);
         // If we were able to successfully find Articles, send them back to the client
-        return res.render('index', dbArticle);
+        return res.render('index');
       })
       .catch(function(err) {
         // If an error occurred, send it to the client
