@@ -30,7 +30,7 @@ app.use(express.static("public"));
 
 var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({
-    defaultLayout: "main",
+    defaultLayout: path.join(__dirname, "/views/layout/main"),
     partialsDir: path.join(__dirname, "/views/layout/partials")
 }));
 app.set("view engine", "handlebars");
@@ -42,7 +42,20 @@ mongoose.connect("mongodb://localhost/NewMongoScraper");
 // Routes
 
 app.get('/', function(req, res){
-    res.send('Welcome to the MongoDB Scraper');
+    console.log("get");
+    db.Article.find({}).then(function (data) {
+        var articleObject = {
+        articleData: data,
+    };
+        console.log("article object" + (data));
+        return res.render("index", articleObject);
+    })
+    .catch(function(err) {
+        // If an error occurred, send it to the client
+        return res.json('Error: ' + err);
+    });
+
+    // res.send('Welcome to the MongoDB Scraper');
 })
 
 // A GET route for scraping the echoJS website
@@ -52,7 +65,7 @@ app.get("/scrape", function(req, res) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
 
-    // Now, we grab every h2 within an article tag, and do the following:
+    // Now, we grab every section with the following class, and do the following:
     $("section.trb_outfit_group_list_item_body").each(function(i, element) {
       // Save an empty result object
       var result = {};
@@ -64,12 +77,6 @@ app.get("/scrape", function(req, res) {
     
       console.log(result);
 
-    //   var article = {
-    //       title: title,
-    //       link: link, 
-    //       summary: summary
-    //   }
-
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
         .then(function(dbArticle) {
@@ -78,7 +85,7 @@ app.get("/scrape", function(req, res) {
         })
         .catch(function(err) {
           // If an error occurred, send it to the client
-          console.log('Error: ' + err);
+          return res.json('Error: ' + err);
         });
 
         // result.push(article);
@@ -98,7 +105,7 @@ app.get("/articles", function(req, res) {
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-      res.json(err);
+      return res.json('Error: ' + err);
     });
 });
 
@@ -114,19 +121,22 @@ app.get("/articles/:id", function(req, res) {
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-      res.json(err);
+      return res.json('Error: ' + err);
     });
 });
 
 // Route for saving/updating an Article's associated Note
 app.post("/articles/:id", function(req, res) {
+  
   // Create a new note and pass the req.body to the entry
   db.Note.create(req.body)
     .then(function(dbNote) {
       // If a Note was created successfully, find one Article with an `_id` equal to `req.params.id`. Update the Article to be associated with the new Note
       // { new: true } tells the query that we want it to return the updated User -- it returns the original by default
       // Since our mongoose query returns a promise, we can chain another `.then` which receives the result of the query
-      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
+      return db.Article.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });  
+      
+      res.redirect('/saved');
     })
     .then(function(dbArticle) {
       // If we were able to successfully update an Article, send it back to the client
@@ -146,7 +156,7 @@ app.get('/saved', function(req, res){
         // var savedObject = {
         //   Article: savedData
         // };
-        res.send('Data saved')
+        res.send('Saved Data')
     })
     .catch(function(err) {
         // If an error occurred, send it to the client
@@ -160,8 +170,8 @@ app.get('/saved', function(req, res){
 });
 
 // Route to save an article
-    app.post('articles/save/:id', function(req, res){
-        db.newsData.findOneAndUpdate({_id: req.params.id}, {saved: true})
+app.post('articles/save/:id', function(req, res){
+    db.newsData.findOneAndUpdate({_id: req.params.id}, {saved: true})
         .then(function(data){
             res.json('route to save data');
             // res.json(dbSaveArticle);
@@ -169,8 +179,8 @@ app.get('/saved', function(req, res){
         .catch(function(err) {
             // If an error occurred, send it to the client
             res.json('ERROR: ' + err);
-          });
-    });
+        });
+});
 
     // Route to delete an article
     app.post("/articles/delete/:id", function(req, res) {
