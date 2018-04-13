@@ -47,7 +47,7 @@ app.get('/', function(req, res){
         var articleObject = {
         articleData: data,
     };
-        console.log("article object" + (data));
+        // console.log("article object" + (data));
         return res.render("index", articleObject);
     })
     .catch(function(err) {
@@ -56,7 +56,7 @@ app.get('/', function(req, res){
     });
 
     // res.send('Welcome to the MongoDB Scraper');
-})
+});
 
 // A GET route for scraping the echoJS website
 app.get("/scrape", function(req, res) {
@@ -88,26 +88,26 @@ app.get("/scrape", function(req, res) {
           return res.json('Error: ' + err);
         });
 
-        // result.push(article);
     });
     // If we were able to successfully scrape and save an Article, send a message to the client
-    res.send("Scrape Complete");
+    res.redirect("/");
   });
 });
 
-// Route for getting all Articles from the db
+
+// Route for displaying all Articles from the db when user clicks "scrape new article"
 app.get("/articles", function(req, res) {
-  // Grab every document in the Articles collection
-  db.Article.find({})
-    .then(function(dbArticle) {
-      // If we were able to successfully find Articles, send them back to the client
-      res.json(dbArticle);
-    })
-    .catch(function(err) {
-      // If an error occurred, send it to the client
-      return res.json('Error: ' + err);
-    });
-});
+    // Grab every document in the Articles collection
+    db.Article.find({})
+      .then(function(dbArticle) {
+        // If we were able to successfully find Articles, send them back to the client
+        res.json(dbArticle);
+      })
+      .catch(function(err) {
+        // If an error occurred, send it to the client
+        return res.json('Error: ' + err);
+      });
+  });
 
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", function(req, res) {
