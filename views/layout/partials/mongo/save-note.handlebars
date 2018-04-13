@@ -1,5 +1,7 @@
-<form action="/articles/notes/{{this.id}}" method="POST">
+<form action="/articles/notes/{{this.note_id}}" method="POST">
 
-        <button class="delete" type="submit" id="saveNote">SAVE THIS NOTE!</button>
+        {{!-- <button class="delete" type="submit" id="saveNote">SAVE THIS NOTE!</button> --}}
+        <button type="button" class="btn btn-warning save" id="saveNote" data-id={{this.note_id}}>SAVE THIS ARTICLE!</button>
+
 
 </form>

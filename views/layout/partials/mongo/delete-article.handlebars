@@ -1,5 +1,6 @@
-<form action="/articles/delete/{{this.id}}?_method=DELETE" method="POST">
+<form action="/articles/delete/{{this.article_id}}?_method=DELETE" method="POST">
 
-        <button class="delete" type="submit" id="deleteArticle">DELETE THIS ARTICLE!</button>
+        {{!-- <button class="delete" type="submit" id="deleteArticle">DELETE THIS ARTICLE!</button> --}}
+    <button type="button" class="btn btn-warning save" id="deleteArticle" data-id={{this._id}}>DELETE THIS ARTICLE!</button>
 
 </form>

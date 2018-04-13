@@ -1,5 +1,7 @@
 <form action="/notes/delete/{{this.note_id}}/{{this.article_id}}?_method=DELETE" method="POST">
 
-        <button class="delete" type="submit" id="deleteNote">DELETE THIS NOTE!</button>
+        {{!-- <button class="delete" type="submit" id="deleteNote">DELETE THIS NOTE!</button> --}}
+        <button type="button" class="btn btn-warning save" id="saveArticle" data-id={{this.note_id}}>DELETE THIS ARTICLE!</button>
+
 
 </form>

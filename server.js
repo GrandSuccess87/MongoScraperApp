@@ -43,11 +43,8 @@ mongoose.connect("mongodb://localhost/NewMongoScraper");
 
 app.get('/', function(req, res){
     db.Article.find({}).then(function (data) {
-        var articleObject = {
-        article: data,
-    };
-        // console.log("article object" + (data));
-        return res.render("index", articleObject);
+    
+        return res.render("index");
     })
     .catch(function(err) {
         // If an error occurred, send it to the client
@@ -96,21 +93,35 @@ app.get("/scrape", function(req, res) {
 
 // Route for displaying all Articles from the db when user clicks "scrape new article"
 app.get("/articles", function(req, res) {
-    // Grab every document in the Articles collection
-    db.Article.find({})
-      .then(function(dbArticle) {
-          console.log(dbArticle);
-        // If we were able to successfully find Articles, send them back to the client
-        return res.render('index');
-      })
-      .catch(function(err) {
+    db.Article.find({}).then(function (articleData) {
+        var dbArticleObject = {
+        article: articleData,
+    };
+        // console.log("article object" + (data));
+        return res.render("index", dbArticleObject);
+    })
+    .catch(function(err) {
         // If an error occurred, send it to the client
         return res.json('Error: ' + err);
-      });
+    });
+    // Grab every document in the Articles collection
+    // db.Article.find({})
+    //   .then(function(dbArticle) {
+        //   console.log(dbArticle);
+        // If we were able to successfully find Articles, send them back to the client
+        // res.json(dbArticle);
+        // return res.json(dbArticle);
+        // return res.render('index');
+    //   })
+    //   .catch(function(err) {
+    //     // If an error occurred, send it to the client
+    //     return res.json('Error: ' + err);
+    //   });
   });
 
 // Route for grabbing a specific Article by id, populate it with it's note
 app.get("/articles/:id", function(req, res) {
+    console.log(req.params.id);
   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
   db.Article.findOne({ _id: req.params.id })
     // ..and populate all of the notes associated with it
@@ -144,12 +155,13 @@ app.post("/articles/notes/:id", function(req, res) {
     })
     .catch(function(err) {
       // If an error occurred, send it to the client
-    //   res.json(err);
+      res.json(err);
     });
 });
 
 
 app.get('/saved', function(req, res){
+    console.log('saved');
     db.Article.find({'saved': true}) 
     .then(function(data){
         var savedObject = {
