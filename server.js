@@ -42,10 +42,9 @@ mongoose.connect("mongodb://localhost/NewMongoScraper");
 // Routes
 
 app.get('/', function(req, res){
-    console.log("get");
     db.Article.find({}).then(function (data) {
         var articleObject = {
-        articleData: data,
+        article: data,
     };
         // console.log("article object" + (data));
         return res.render("index", articleObject);
@@ -101,7 +100,7 @@ app.get("/articles", function(req, res) {
     db.Article.find({})
       .then(function(dbArticle) {
         // If we were able to successfully find Articles, send them back to the client
-        res.json(dbArticle);
+        return res.render('index', dbArticle);
       })
       .catch(function(err) {
         // If an error occurred, send it to the client
@@ -148,19 +147,18 @@ app.post("/articles/notes/:id", function(req, res) {
     });
 });
 
-// // Route for viewing saved articles
 
 app.get('/saved', function(req, res){
     db.Article.find({'saved': true}) 
     .then(function(data){
-        // var savedObject = {
-        //   Article: savedData
-        // };
-        res.send('Saved Data')
+        var savedObject = {
+          savedArticles: data
+        };
+        return res.render('saved', savedObject);
     })
     .catch(function(err) {
         // If an error occurred, send it to the client
-        res.json('ERROR: ' + err);
+        return res.json('ERROR: ' + err);
     });
         // console.log(savedData);    
         // console.log('Saved Articles: ' + savedObject);
@@ -186,7 +184,8 @@ app.post('articles/save/:id', function(req, res){
     app.post("/articles/delete/:id", function(req, res) {
         db.Article.findOneAndUpdate({ "_id": req.params.id }, {"saved": false, "notes": []})
         .then(function(err, dbDeletedArticle) {
-            res.send(dbDeletedArticle);
+            // res.send(dbDeletedArticle);
+            res.redirect('/');
         })
         .catch(function(err) {
         // If an error occurred, send it to the client
